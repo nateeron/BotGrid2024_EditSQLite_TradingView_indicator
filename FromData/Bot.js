@@ -1,5 +1,5 @@
-const SETTING_PERCEN_BUY = 0.45;
-const SETTING_PERCEN_SELL = 0.55;
+let SETTING_PERCEN_BUY = 0.45;
+let SETTING_PERCEN_SELL = 0.55;
 
 function c_b(p) {
     p_B = p - (p / 100) * SETTING_PERCEN_BUY;
@@ -82,13 +82,13 @@ const txt_TP_Val = document.getElementById("TP_Val");
 const txt_Net_profit = document.getElementById("Net_profit");
 const com = 0.1 * 2; // ค่าคอมมิชั่น
 
-
+txt_Order_Val.value = 16;
+txt_low_Buy.value = 0.45;
+txt_TP_Val.value = 0.55;
 
 function BotGrid(data, TF) {
     
-    txt_Order_Val.value = 16;
-    txt_low_Buy.value = 0.45;
-    txt_TP_Val.value = 0.55;
+    
     //console.log("BotGrid",data)
     let p = 0;
     let p_buy = [];
@@ -101,24 +101,24 @@ function BotGrid(data, TF) {
     let Count_B = 0;
     let Count_S = 0;
     const ss = data.map((x, i) => {
-        // console.log(x.close,i)
+        // console.log(x.value,i)
         const plot = x.time;
-        console.log(i, p_Action, x.close, plot);
+        //console.log(i, p_Action, x.value, plot);
         if (p_Action == 0) {
             // Action BUY
-            p_Action = x.close;
+            p_Action = x.value;
             last_ACTION = "BUY";
             //console.log("BUY");
             Count_B = Count_B + 1;
             markers = markers.concat(mark_B(plot));
-            p_buy = p_buy.concat(x.close);
+            p_buy = p_buy.concat(x.value);
         }
         let c_mark = 0;
         //แสดงจุดซื้อขาย
         p_buy.forEach( (pB, index) => {
-            if (x.close > c_s(pB) || x.high > c_s(pB)) {
+            if (x.value > c_s(pB) ) {
                 // Action Sell
-                p_Action = x.close;
+                p_Action = x.value;
                 last_ACTION = "SELL";
                 //  console.log("SELL");
 
@@ -137,35 +137,35 @@ function BotGrid(data, TF) {
             }
         });
 
-        if (x.close < c_b(p_Action) || x.low < c_b(p_Action)) {
+        if (x.value < c_b(p_Action) ) {
             // Action BUY
-            p_Action = x.close;
+            p_Action = x.value;
             last_ACTION = "BUY";
             // console.log("BUY");
             Count_B = Count_B + 1;
             markers = markers.concat(mark_B(plot));
-            p_buy = p_buy.concat(x.close);
+            p_buy = p_buy.concat(x.value);
         }
         if (p_buy.length == 0) {
             //console.log(plot);
             // Action BUY
-            p_Action = x.close;
+            p_Action = x.value;
             last_ACTION = "BUY";
             //console.log("BUY");
             Count_B = Count_B + 1;
             markers = markers.concat(mark_B(plot));
-            p_buy = p_buy.concat(x.close);
+            p_buy = p_buy.concat(x.value);
         }
-        // else if (last_ACTION == "BUY" && x.close < c_b(p_Action)) {
+        // else if (last_ACTION == "BUY" && x.value < c_b(p_Action)) {
         //    // Action BUY
-        //    p_Action = x.close;
+        //    p_Action = x.value;
         //    last_ACTION = "BUY";
         //    console.log("BUY");
         //    markers = markers.concat(mark_B(plot));
         //    Count_B = Count_B + 1;
-        //} else if (last_ACTION == "SELL" && x.close > c_s(p_Action)) {
+        //} else if (last_ACTION == "SELL" && x.value > c_s(p_Action)) {
         //    // Action Sell
-        //    p_Action = x.close;
+        //    p_Action = x.value;
         //    last_ACTION = "SELL";
         //    console.log("SELL");
         //    markers = markers.concat(mark_S(plot));
@@ -200,6 +200,12 @@ txt_TP_Val.addEventListener("change", function () {
 txt_low_Buy.addEventListener("change", function () {
     const pf = cal_NetPorfit(txt_Order_Val.value, txt_TP_Val.value, txt_low_Buy.value, com, txt_Action_S.innerText);
     txt_Net_profit.innerHTML = pf + "$ THB:" + pf * 35;
+    SETTING_PERCEN_BUY = txt_low_Buy.value
+    SETTING_PERCEN_SELL = txt_TP_Val.value
+    console.log("*********************** Bot Run... **************************")
+    console.log(rawKlines_ot,'1m')
+    const bot  =  BotGrid(rawKlines_ot,'1m')
+    candlestickSeries_Line.setMarkers(bot);
 });
 
 function cal_days(t1, t2) {

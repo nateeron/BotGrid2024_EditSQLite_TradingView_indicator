@@ -63,3 +63,21 @@ function simulateLoading() {
     // Simulate a loading process (e.g., API call) with a timeout
    // setTimeout(hideLoadingBackdrop, 3000); // Hide after 3 seconds
 }
+
+function convertTimestampToDateTime(timestamp) {
+    // Create a new Date object using the timestamp
+    const date = new Date(timestamp);
+  
+    // Extract the date and time components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    // Format the date and time as a string
+    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    return formattedDateTime;
+}
