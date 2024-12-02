@@ -129,14 +129,14 @@
                 </div>
             </div>
             <div class="pl">
-                Order Value :  <input type="number" id="Order_Val" step="01" value="00" > 
+                Order Value : <input type="number" id="Order_Val" step="01" value="00">
             </div>
             <div class="pl">
-                low Buy % :  <input type="number" id="low_Buy" step="0.01" value="0.00" >
-               
+                low Buy % : <input type="number" id="low_Buy" step="0.01" value="0.00">
+
             </div>
             <div class="pl">
-                TP % :  <input type="number" id="TP_Val" step="0.01" value="0.00" >
+                TP % : <input type="number" id="TP_Val" step="0.01" value="0.00">
 
             </div>
 
@@ -152,7 +152,10 @@
     <div id="chart"></div>
     <div id="chart2"></div>
     <script>
-
+        //***************************************************************************************************
+        // 
+        // http://127.0.0.1:5501/FromData/RealtimeUpdatesEND_UpdateV4.1.html?bar=100000
+        //***************************************************************************************************
         let bar
         const myPriceFormatter = p => p.toFixed(4);
         //----------------------------------------------------------
@@ -170,25 +173,25 @@
                 borderColor: '#63C20B',
             },
             autoSize: true,
-           //timeScale: {
-           //    timeVisible: true,
-           //    secondsVisible: false,
-           //    tickMarkFormatter: (time, tickMarkType, locale) => {
-           //        const date = new Date(time * 1000);
-           //        return date.toLocaleDateString(locale, {
-           //            day: 'numeric',
-           //            month: 'short',
-           //            year: 'numeric',
-           //        });
-           //    },
-           //},
+            //timeScale: {
+            //    timeVisible: true,
+            //    secondsVisible: false,
+            //    tickMarkFormatter: (time, tickMarkType, locale) => {
+            //        const date = new Date(time * 1000);
+            //        return date.toLocaleDateString(locale, {
+            //            day: 'numeric',
+            //            month: 'short',
+            //            year: 'numeric',
+            //        });
+            //    },
+            //},
             timeScale: {
                 timeVisible: true,
                 secondsVisible: false,
                 tickMarkFormatter: (time, tickMarkType, locale) => {
                     // Create a new Date object with the given time
                     const date = new Date(time * 1000);
-                    
+
                     // Define options for formatting the date and time
                     const options = {
                         day: 'numeric',
@@ -196,9 +199,9 @@
                         year: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit',
-                       
+
                     };
-        
+
                     // Use Intl.DateTimeFormat for localized date and time formatting
                     const formatter = new Intl.DateTimeFormat(locale, options);
                     return formatter.format(date);
@@ -227,7 +230,7 @@
 
         // Example: Get the value of a specific parameter named 'exampleParam'
         bar = params.get('bar');
-      
+        console.log()
         const base_url = "https://api.binance.com/api/v3/klines";
         const symbol = 'BNBUSDT'; // Replace with your symbol
         const limit = 1000; // Binance API limit for klines per request
@@ -260,7 +263,7 @@
         const maPeriod2 = 20;
         const decimal = 4
         // NEW ------------------------------
-      
+
 
         function convert_TS(timestamp) {
             // Create a new Date object using the timestamp
@@ -347,13 +350,13 @@
             }
 
         }
-       
+
         async function fetchdata_Post(li) {
             const url = 'http://127.0.0.1:8400/select';
             const requestData = {
                 limit: li
             };
-        
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -361,18 +364,22 @@
                 },
                 body: JSON.stringify(requestData)
             });
+            console.log(requestData)
+
             if (!response.ok) {
+
                 throw new Error('Network response was not ok ' + response.statusText);
             }
-        
+
             const data = await response.json();
+            console.log(data)
             return data;
         }
 
 
         async function fetchdata() {
 
-            const response = await fetch('http://127.0.0.1:8400/select',{'s':1000})
+            const response = await fetch('http://127.0.0.1:8400/select', { 's': 1000 })
             const data = await response.json();
             return data;
         }
@@ -384,7 +391,7 @@
         async function fetchHistoricalData(symbol, interval) {
             let rawKlines_ = null
             const rawKlines = await fetchAllKlines(symbol, interval, 1000);
-
+            console.log(symbol, interval, 1000, totalRows)
             await fetchdata_Post(totalRows).then(data => {
                 rawKlines_ = data;
                 rawKlines_ot = data;
@@ -392,41 +399,41 @@
             }).catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
-            
+
             const data1 = rawKlines[0][0]
-            const Last_Bar = rawKlines[rawKlines.length-1][0] // เวลาล่าสุด
-            const data20 = rawKlines_[rawKlines_.length-1].time
+            const Last_Bar = rawKlines[rawKlines.length - 1][0] // เวลาล่าสุด
+            const data20 = rawKlines_[rawKlines_.length - 1].time
             const data2 = rawKlines_[0].time
-            console.log(data1,data2)
-            console.log(1723006740000/1000)
-            
+            console.log(data1, data2)
+            console.log(1723006740000 / 1000)
+
             const validData = validateData(rawKlines_);
             const noDuplicatesData = removeDuplicates(validData);
             //console.log('data1 :',convertTimestampToDateTime(data1))
-            console.log('Last_Bar:',convertTimestampToDateTime(Last_Bar))
+            console.log('Last_Bar:', convertTimestampToDateTime(Last_Bar))
             console.log(convertTimestampToDateTime(data2))
             console.log(convertTimestampToDateTime(data20))
-            console.log('s',convertTimestampToDateTime(1723006740000))
+            console.log('s', convertTimestampToDateTime(1723006740000))
             const m1 = 60000
-            console.log('s+1m',convertTimestampToDateTime(1723006740000+m1))
+            console.log('s+1m', convertTimestampToDateTime(1723006740000 + m1))
             // เวลาล่าสุด - อดีต
             const calLoad = (Last_Bar - 1723006740000)
-            const minit = calLoad/60000 // คิดเป็น บาร์ละนาที เอาตรงนี้ไป Load บาร์ล่าสุดเพิ่ม
-            console.log('Load เพิ่ม กี่บาร์ : นาที',calLoad/60000) // = นาที
-            const cal = (1723006740000+ calLoad)
-            console.log('Cal', cal,convertTimestampToDateTime(cal)) // = นาที
+            const minit = calLoad / 60000 // คิดเป็น บาร์ละนาที เอาตรงนี้ไป Load บาร์ล่าสุดเพิ่ม
+            console.log('Load เพิ่ม กี่บาร์ : นาที', calLoad / 60000) // = นาที
+            const cal = (1723006740000 + calLoad)
+            console.log('Cal', cal, convertTimestampToDateTime(cal)) // = นาที
 
 
             spinner_txt.innerHTML = 'cal EMA...'
             try {
                 processedData = noDuplicatesData
-               //processedData = rawKlines.map(item => ({
-               //    time: item[0]/1000 , // Convert milliseconds to seconds
-               //    open: parseFloat(item[1]),
-               //    high: parseFloat(item[2]),
-               //    low: parseFloat(item[3]),
-               //    close: parseFloat(item[4])
-               //}));
+                //processedData = rawKlines.map(item => ({
+                //    time: item[0]/1000 , // Convert milliseconds to seconds
+                //    open: parseFloat(item[1]),
+                //    high: parseFloat(item[2]),
+                //    low: parseFloat(item[3]),
+                //    close: parseFloat(item[4])
+                //}));
                 //------ Start EMA20 -----------------
                 // EMA 20
 
@@ -440,9 +447,9 @@
                 //SeriesMarkerPosition: "aboveBar" | "belowBar" | "inBar"
                 //SeriesMarkerShape: "circle" | "square" | "arrowUp" | "arrowDown"
 
-              
+
                 console.log("Bot Run...")
-                const bot  =  BotGrid(rawKlines_,interval)
+                const bot = BotGrid(rawKlines_, interval)
                 candlestickSeries_Line.setMarkers(bot);
                 //candlestickSeries_Line.setMarkers(BotGrid(rawKlines_, interval));
                 console.log("Bot Success...")

@@ -88,7 +88,7 @@ function BotGrid(data, TF) {
     
     txt_Order_Val.value = 16;
     txt_low_Buy.value = 0.45;
-    txt_TP_Val.value = 0.55;
+    txt_TP_Val.value = 5.5;
     //console.log("BotGrid",data)
     let p = 0;
     let p_buy = [];
